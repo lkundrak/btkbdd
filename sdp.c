@@ -259,22 +259,24 @@ void sdp_add_keyboard()
 
 void sdp_remove()
 {
+	if (!sdp_session)
+		return;
 	if (sdp_record && sdp_record_unregister(sdp_session, sdp_record)) {
 		printf("%s: HID Device (Keyboard) Service Record unregistration failed\n", (char*)__func__);
 	}
 
 	sdp_close(sdp_session);
+	sdp_session = NULL;
 }
 
-void sdp_open()
+int sdp_open()
 {
-	if (!sdp_session) {
-		sdp_session = sdp_connect(BDADDR_ANY, BDADDR_LOCAL, 0);
-	}
-	if (!sdp_session) {
-		printf("%s: sdp_session invalid\n", (char*)__func__);
-		exit(-1);
-	}
+	if (sdp_session)
+		return 0;
+	sdp_session = sdp_connect(BDADDR_ANY, BDADDR_LOCAL, 0);
+	if (!sdp_session)
+		return -1;
+	return 1;
 }
 
 #ifdef SDP_MAIN

@@ -88,10 +88,10 @@ main (argc, argv)
 
 	device = argv[optind];
 
-	sdp_open ();
-	sdp_add_keyboard ();
 	save_class = set_class (hci, 0x002540UL);
 	while (session (device, src, &tgt)) {
+		if (sdp_open () == 1)
+			sdp_add_keyboard ();
 		if (!cable)
 			continue;
 		cablef = fopen (cable, "w");

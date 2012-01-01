@@ -18,9 +18,9 @@ int l2cap_listen (const bdaddr_t *, unsigned short, int, int);
 int l2cap_accept (int, bdaddr_t *);
 int l2cap_connect (bdaddr_t *, bdaddr_t *, unsigned short);
 
+int sdp_open ();
 void sdp_add_keyboard ();
 void sdp_remove ();
-void sdp_open ();
 
 uint32_t set_class (int, uint32_t);
 int session ();
