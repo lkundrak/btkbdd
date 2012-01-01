@@ -21,7 +21,7 @@
 #include "hid.h"
 #include "linux2hid.h"
 
-//#define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define DBG(...) fprintf (stderr, __VA_ARGS__)
 #else
@@ -285,15 +285,15 @@ hello (control)
 
 /* Open connections, device, and dispatch the work */
 int
-session (device, host)
+session (device, src, tgt)
 	char *device;
-	char *host;
+	bdaddr_t src;
+	bdaddr_t *tgt;
 {
 	int sintr, scontrol;		/* server sockets */
 	int control = -1, intr = -1;	/* host sockets */
 	int input;			/* event device */
 	struct status status;		/* keyboard state */
-	bdaddr_t src, tgt;		/* addresses */
 	struct pollfd pf[5];
 
 	/* Initialize the keyboard state */
@@ -315,11 +315,6 @@ session (device, host)
 	set_leds (input, status.leds);
 
 	/* Prepare the server sockets, in case a client will connect. */
-	if (host) {
-		bacpy (&src, BDADDR_ANY);
-		str2ba (host, &tgt);
-	}
-
 	sintr = l2cap_listen (BDADDR_ANY, L2CAP_PSM_HIDP_INTR, 0, 1);
 	if (sintr == -1) {
 		close (input);
@@ -353,13 +348,13 @@ session (device, host)
 			 * Try to reach out for a host ourselves. */
 			if (control == -1) {
 				/* Noone to talk to? */
-				if (!host)
+				if (!bacmp (tgt, BDADDR_ANY))
 					break;
 
-				pf[1].fd = control = l2cap_connect (&src, &tgt, L2CAP_PSM_HIDP_CTRL);
+				pf[1].fd = control = l2cap_connect (&src, tgt, L2CAP_PSM_HIDP_CTRL);
 				if (control == -1)
 					break;
-				pf[2].fd = intr = l2cap_connect (&src, &tgt, L2CAP_PSM_HIDP_INTR);
+				pf[2].fd = intr = l2cap_connect (&src, tgt, L2CAP_PSM_HIDP_INTR);
 				if (intr == -1)
 					break;
 				hello (control);
@@ -391,7 +386,7 @@ session (device, host)
 
 			if (control != -1)
 				close (control);
-			pf[1].fd = control = l2cap_accept (scontrol, NULL);
+			pf[1].fd = control = l2cap_accept (scontrol, tgt);
 			if (control == -1)
 				break;
 			close (scontrol);

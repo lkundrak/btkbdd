@@ -6,6 +6,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/hci.h>
+#include <bluetooth/hci_lib.h>
 
 #include "btkbdd.h"
 
@@ -15,17 +20,90 @@ main (argc, argv)
 	char *argv[];
 {
 	uint32_t save_class;
+	char *device = NULL;
+	char *cable = NULL;
+        bdaddr_t src, tgt;
+	int hci = 0;
+	int opt;
+	FILE *cablef;
+	char addr[] = "00:00:00:00:00:00";
 
-	if (argc < 2 || argc > 3) {
-		fprintf (stderr, "Usage: %s <device> [<ho:st:_a:dd:re:ss>]\n", argv[0]);
+	bacpy (&src, BDADDR_ANY);
+	bacpy (&tgt, BDADDR_ANY);
+
+	while ((opt = getopt(argc, argv, "s:t:c:dv")) != -1) {
+
+		switch (opt) {
+		case 's':
+			if (bachk (optarg) == -1) {
+				fprintf (stderr, "%s: Not a valid bluetooth address\n", optarg);
+				return EXIT_FAILURE;
+			}
+			str2ba (optarg, &src);
+			hci = hci_devid (optarg);
+			if (hci == -1) {
+				perror (optarg);
+				return EXIT_FAILURE;
+			}
+			break;
+		case 't':
+			if (bachk (optarg) == -1) {
+				fprintf (stderr, "%s: Not a valid bluetooth address\n", optarg);
+				return EXIT_FAILURE;
+			}
+			str2ba (optarg, &tgt);
+			break;
+		case 'c':
+			cable = optarg;
+			cablef = fopen (cable, "r");
+			if (!cablef) {
+				perror (cable);
+				break;
+			}
+			fscanf (cablef, "%17s", addr);
+			fclose (cablef);
+			if (bachk (addr) == -1) {
+				fprintf (stderr, "%s: Not a valid bluetooth address\n", addr);
+			} else {
+				str2ba (addr, &tgt);
+			}
+			break;
+		case 'd':
+			daemon (0, 0);
+			break;
+		default:
+			fprintf (stderr, "Unexpected '%c' option.", opt);
+		case '?':
+			return EXIT_FAILURE;
+		}
+	}
+
+	if (optind + 1 != argc) {
+		fprintf (stderr, "Usage: %s "
+			"[-s <sr:c_:_a:dd:re:ss>] "
+			"[-t <de:st:_a:dd:re:ss>] "
+			"[-c <file>] [-d] <device>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
+	device = argv[optind];
+
 	sdp_open ();
 	sdp_add_keyboard ();
-	save_class = set_class (0, 0x002540UL);
-	while (session (argv[1], argc > 2 ? argv[2] : NULL));
-	set_class (0, save_class);
+	save_class = set_class (hci, 0x002540UL);
+	while (session (device, src, &tgt)) {
+		if (!cable)
+			continue;
+		cablef = fopen (cable, "w");
+		if (!cablef) {
+			perror (cable);
+			continue;
+		}
+		ba2str (&tgt, addr);
+		fprintf (cablef, "%s\n", addr);
+		fclose (cablef);
+	}
+	set_class (hci, save_class);
 	sdp_remove ();
 
 	/* Only returns on fatal failure */
