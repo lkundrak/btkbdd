@@ -28,4 +28,5 @@ install: $(BINS)
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	install -p $(BINS) $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)/etc/udev/rules.d
-	install -pm644 90-vkbd.rules $(DESTDIR)/etc/udev/rules.d
+	install -p -m644 90-btkbdd.rules $(DESTDIR)/etc/udev/rules.d
+	mkdir -p $(DESTDIR)/var/lib/btkbd
