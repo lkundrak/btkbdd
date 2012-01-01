@@ -1,0 +1,9 @@
+# Add your keyboards here, dear sir or lady.
+# Use udevadm info --export-db or lsusb to find out how to identify your keyboard
+# (likely just vendor-id and product-id, see examples below)
+
+## 05ac:0221 Apple, Inc. Aluminum Keyboard (ISO)
+#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_CLASS}=="kbd", ATTRS{idVendor}=="05ac", ATTRS{idProduct}=="0221", RUN+="/usr/sbin/btkbdd $env{DEVNAME} -c /var/lib/btkbd/apple.cable -d"
+
+## 04f2:0111 Chicony Electronics Co., Ltd KU-9908 Keyboard
+#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_CLASS}=="kbd", ATTRS{idVendor}=="04f2", ATTRS{idProduct}=="0111", RUN+="/usr/sbin/btkbdd $env{DEVNAME} -c /var/lib/btkbd/chicony.cable -d"

@@ -6,6 +6,8 @@ CFLAGS += -Wall -g3
 override LDFLAGS += $(shell pkg-config bluez --libs)
 override LDFLAGS += -Wl,--as-needed
 
+PREFIX = /usr/local
+
 BINS = btkbdd
 all: $(BINS)
 
@@ -21,3 +23,9 @@ $(BINS):
 
 clean:
 	rm -f *.o $(BINS)
+
+install: $(BINS)
+	mkdir -p $(DESTDIR)$(PREFIX)/sbin
+	install -p $(BINS) $(DESTDIR)$(PREFIX)/sbin
+	mkdir -p $(DESTDIR)/etc/udev/rules.d
+	install -pm644 90-vkbd.rules $(DESTDIR)/etc/udev/rules.d
