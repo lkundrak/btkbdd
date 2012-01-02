@@ -10,30 +10,12 @@
  */
 
 #define _GNU_SOURCE
-#include <assert.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <stdarg.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/poll.h>
-#include <termios.h>
-#include <time.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <netinet/in.h>
-#include <netdb.h>
 #include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
 #include <bluetooth/sdp.h>
 #include <bluetooth/sdp_lib.h>
-#include <bluetooth/rfcomm.h>
-#include <openobex/obex.h>
 
 #include "btkbdd.h"
 #if 0
