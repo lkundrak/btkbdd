@@ -69,7 +69,10 @@ main (argc, argv)
 			}
 			break;
 		case 'd':
-			daemon (0, 0);
+			if (daemon (0, 0) == -1) {
+				perror ("daemon");
+				return EXIT_FAILURE;
+			}
 			break;
 		default:
 			fprintf (stderr, "Unexpected '%c' option.", opt);
