@@ -202,13 +202,7 @@ input_event (status, input, ctrl, intr)
 	fprintf (stderr, "\n");
 #endif
 
-	/* Send the packet to the host. */
-	if (write (intr, &status->report, sizeof(status->report)) <= 0) {
-		perror ("Could not send a packet to the host");
-		return -1;
-	}
-
-	return 0;
+	return 1;
 }
 
 /* Initialize an evdev device. */
@@ -333,8 +327,22 @@ session (device, src, tgt)
 		DBG("Entered main loop.\n");
 
 		if (pf[0].revents) {
+			int ret;
+
 			/* An input event */
 			pf[0].revents = 0;
+
+			/* Read the keyboard event and update status */
+			ret = input_event (&status, input, control, intr);
+			if (ret == -1) {
+				if (control != -1)
+					close (control);
+				if (intr != -1)
+					close (intr);
+				return 0;
+			}
+			if (ret == 0)
+				continue;
 			DBG("Input event.\n");
 
 			/* Noone managed to connect to us so far.
@@ -353,8 +361,12 @@ session (device, src, tgt)
 				hello (control);
 			}
 
-			if (input_event (&status, input, control, intr))
+			/* Send the packet to the host. */
+			if (write (intr, &status.report, sizeof(status.report)) <= 0) {
+				perror ("Could not send a packet to the host");
 				break;
+			}
+
 		}
 		if (pf[1].revents) {
 			/* Control connection command */
