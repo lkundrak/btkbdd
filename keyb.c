@@ -21,13 +21,6 @@
 #include "hid.h"
 #include "linux2hid.h"
 
-#define DEBUG
-#ifdef DEBUG
-#define DBG(...) fprintf (stderr, __VA_ARGS__)
-#else
-#define DBG(...)
-#endif
-
 /* A packet we're sending to host after a keypress */
 struct key_report {
 	uint8_t type;

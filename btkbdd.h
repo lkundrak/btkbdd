@@ -14,6 +14,13 @@
 #ifndef __VKBD_H
 #define __VKBD_H
 
+//#define DEBUG
+#ifdef DEBUG
+#define DBG(...) fprintf (stderr, __VA_ARGS__)
+#else
+#define DBG(...)
+#endif
+
 int l2cap_listen (const bdaddr_t *, unsigned short, int, int);
 int l2cap_accept (int, bdaddr_t *);
 int l2cap_connect (bdaddr_t *, bdaddr_t *, unsigned short);
