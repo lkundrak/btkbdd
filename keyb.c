@@ -394,7 +394,6 @@ session (device, src, tgt)
 			pf[1].fd = control = l2cap_accept (scontrol, tgt);
 			if (control == -1)
 				break;
-			close (scontrol);
 			pf[3].fd = scontrol = -1;
 		}
 		if (pf[4].revents) {
@@ -411,7 +410,6 @@ session (device, src, tgt)
 			if (intr == -1)
 				break;
 			hello (control);
-			close (sintr);
 			pf[4].fd = sintr = -1;
 		}
 	}
