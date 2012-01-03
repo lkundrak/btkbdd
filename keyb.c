@@ -16,6 +16,8 @@
 #include <linux/input.h>
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hidp.h>
+#include <bluetooth/hci.h>
+#include <bluetooth/hci_lib.h>
 
 #include "btkbdd.h"
 #include "hid.h"
@@ -270,16 +272,14 @@ hello (control)
 	sleep (1);
 }
 
-/* Open connections, device, and dispatch the work */
-int
-session (device, src, tgt)
-	char *device;
+/* Dispatch the work */
+static int
+session (src, tgt, input, sintr, scontrol)
 	bdaddr_t src;
 	bdaddr_t *tgt;
+	int input, sintr, scontrol;
 {
-	int sintr, scontrol;		/* server sockets */
 	int control = -1, intr = -1;	/* host sockets */
-	int input;			/* event device */
 	struct status status;		/* keyboard state */
 	struct pollfd pf[5];
 
@@ -292,27 +292,8 @@ session (device, src, tgt)
 		= status.report.key[3] = status.report.key[4]
 		= status.report.key[5] = 0;
 	status.leds = 0;
-
-	DBG("Initializating.\n");
-
-	/* Open the input event device */
-	input = input_open (device);
-	if (input == -1)
-		return 0;
 	set_leds (input, status.leds);
 
-	/* Prepare the server sockets, in case a client will connect. */
-	sintr = l2cap_listen (BDADDR_ANY, L2CAP_PSM_HIDP_INTR, 0, 1);
-	if (sintr == -1) {
-		close (input);
-		return 0;
-	}
-	scontrol = l2cap_listen (BDADDR_ANY, L2CAP_PSM_HIDP_CTRL, 0, 1);
-	if (scontrol == -1) {
-		close (input);
-		close (sintr);
-		return 0;
-	}
 
 	/* Watch out */
 	pf[0].fd = input;
@@ -414,15 +395,72 @@ session (device, src, tgt)
 		}
 	}
 
-	close (input);
-	if (scontrol != -1)
-		close (scontrol);
-	if (sintr != -1)
-		close (sintr);
 	if (control != -1)
 		close (control);
 	if (intr != -1)
 		close (intr);
+
+	return 1;
+}
+
+int
+loop (device, src, tgt)
+	char *device;
+	bdaddr_t src;
+	bdaddr_t *tgt;
+{
+	int sintr, scontrol;	/* server sockets */
+	int input;		/* event device */
+	int hci = -1;
+	uint32_t save_class = 0;
+
+	/* Open the input event device */
+	input = input_open (device);
+	if (input == -1)
+		return 0;
+
+	/* Prepare the server sockets, in case a client will connect. */
+	sintr = l2cap_listen (&src, L2CAP_PSM_HIDP_INTR, 0, 1);
+	if (sintr == -1) {
+		close (input);
+		return 0;
+	}
+	scontrol = l2cap_listen (&src, L2CAP_PSM_HIDP_CTRL, 0, 1);
+	if (scontrol == -1) {
+		close (input);
+		close (sintr);
+		return 0;
+	}
+
+	do {
+		if (hci == -1) {
+			if (bacmp (&src, BDADDR_ANY)) {
+				char addr[18];
+
+				ba2str (&src, addr);
+				hci = hci_devid (addr);
+			} else {
+				/* No source device specified. Assume first. */
+				hci = 0;
+			}
+			if (hci >= 0) {
+				if (sdp_open () == 1)
+					sdp_add_keyboard ();
+				if (!save_class)
+					save_class = set_class (hci, 0x002540UL);
+			} else {
+				/* Not yet plugged in or visited by udev? */
+				perror ("Can not find HCI device");
+			}
+		}
+	} while (session (src, tgt, input, sintr, scontrol));
+	sdp_remove ();
+	if (save_class)
+		set_class (hci, save_class);
+
+	close (input);
+	close (sintr);
+	close (scontrol);
 
 	return 1;
 }

@@ -30,6 +30,6 @@ void sdp_add_keyboard ();
 void sdp_remove ();
 
 uint32_t set_class (int, uint32_t);
-int session ();
+int loop (char *, bdaddr_t, bdaddr_t *);
 
 #endif

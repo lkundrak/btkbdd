@@ -8,10 +8,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-
 #include "btkbdd.h"
 
 int
@@ -19,11 +15,8 @@ main (argc, argv)
 	int argc;
 	char *argv[];
 {
-	uint32_t save_class;
-	char *device = NULL;
 	char *cable = NULL;
         bdaddr_t src, tgt;
-	int hci = 0;
 	int opt;
 	FILE *cablef;
 	char addr[] = "00:00:00:00:00:00";
@@ -40,11 +33,6 @@ main (argc, argv)
 				return EXIT_FAILURE;
 			}
 			str2ba (optarg, &src);
-			hci = hci_devid (optarg);
-			if (hci == -1) {
-				perror (optarg);
-				return EXIT_FAILURE;
-			}
 			break;
 		case 't':
 			if (bachk (optarg) == -1) {
@@ -89,25 +77,20 @@ main (argc, argv)
 		return EXIT_FAILURE;
 	}
 
-	device = argv[optind];
+	/* Main loop */
+	loop (argv[optind], src, &tgt);
 
-	save_class = set_class (hci, 0x002540UL);
-	while (session (device, src, &tgt)) {
-		if (sdp_open () == 1)
-			sdp_add_keyboard ();
-		if (!cable)
-			continue;
+	/* Store remote address */
+	if (cable) {
 		cablef = fopen (cable, "w");
-		if (!cablef) {
+		if (cablef) {
+			ba2str (&tgt, addr);
+			fprintf (cablef, "%s\n", addr);
+			fclose (cablef);
+		} else {
 			perror (cable);
-			continue;
 		}
-		ba2str (&tgt, addr);
-		fprintf (cablef, "%s\n", addr);
-		fclose (cablef);
 	}
-	set_class (hci, save_class);
-	sdp_remove ();
 
 	/* Only returns on fatal failure */
 	return EXIT_FAILURE;
