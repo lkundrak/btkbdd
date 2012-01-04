@@ -1,0 +1,149 @@
+=head1 NAME
+
+btkbdd - Bluetooth Keyboard Daemon
+
+=head1 SYNOPSIS
+
+B<btkbdd>
+[-s I<addr>]
+[-t I<addr>]
+[-c I<file>]
+[-d]
+I<device>
+
+=head1 DESCRIPTION
+
+This tool starts a Bluetooth HID Keyboard service, serving keystrokes 
+obtained via Linux Input subsystem's event device (I<evdev>).
+In practical terms, it turns your Linux box with a physical keyboard into 
+a Bluetooth keyboard, which can be used by various Bluetooth HID capable 
+devices, including desktop or tablet computers, smart phones, game 
+consoles and so on.
+
+It implements most of the important HID protocol features, including 
+robust connection restores (I<virtual cabling>) and report protocol (as 
+required by Apple's Darwin-based devices). It is possible and encouraged 
+to use the tool from udev, starting it when event devices appear after a 
+keyboard is plugged in.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-s> I<addr>
+
+Accept connections on given Bluetooth address. Useful when your computer
+has multiple Bluetooth Host Controller Interfaces (I<HCI>).
+
+Class of this device is changed into keyboard while the program is running
+and restored upon termination.
+
+Defaults to accepting connections on any interface, while changing the
+class only of the first interface I<hci0>, which is a sane default for
+computers with a single HCI.
+
+=item B<-t> I<addr>
+
+Attempt connecting to given address upon key press, if no connection has 
+been estabilished yet. This can be used to effectively "hardwire" the 
+keyboard to a given host.
+
+Once an incoming connection is estabilished and terminated, btkbdd always
+tries to restore it upon a key press event.
+
+=item B<-c> I<file>
+
+Save the last connected remote address into given file upon termination 
+and restore it on startup.
+
+Use this option if you want to remember last connected device between 
+btkbdd runs.
+
+=item B<-d>
+
+Become a daemon.  Give up controlling terminal, open file descriptors and 
+double-fork to escape parent process control.
+
+While breaking process hierarchy has certain disadvantages and is 
+deprecated with modern service control daemons such as L<systemd(8)>),
+it is necessary to do so with L<udevd(8)>, otherwise btkbdd would block 
+the whole worker process.
+
+=item I<device>
+
+Linux input subsystem event device to use as source for key presses.
+
+=back
+
+=head1 EXAMPLES
+
+Use with L<udev(7)> is recommended. Look into F<90-btkbdd.rules> file 
+distributed with btkbdd for examples.
+
+=over
+
+=item B<btkbdd /dev/input/event8>
+
+Most basic usage -- just open a keyboard device and listen for incoming 
+connections.  When in doubt about which physical device corresponds to an 
+event device node, use C<udevadm info --attribute-walk --name=I<file>> to 
+identify the device and its connection details.
+
+=item B<btkbdd /dev/input/event8 -s EC:55:F9:EF:12:34 -c /var/lib/btkbdd/keyboard.cable>
+
+Only accept connections on given HCI and remember the connected device.
+You can discover your HCI device addresses with C<hcitool dev> command.
+
+=item B<btkbdd /dev/input/event8 -t EC:55:F9:EF:56:78>
+
+Initiate a connection to given Bluetooth host.
+You can discover available devices with C<hcitool scan>.
+
+=back
+
+=head1 BUGS
+
+Bluez L<bluetoothd(8)> daemon is likely to listen for HID events. For
+btkbdd to accept connection you need to disable the Bluez input plugin
+by setting C<DisablePlugins = input> in F</etc/bluetooth/main.conf>.
+
+Nothing but errors is logged and when in daemon mode even the error output 
+is lost. Attach L<strace(1)> or launch btkbdd manually to troubleshoot 
+errors.
+
+Only a common 101-key keyboard is supported.
+
+To estabilish pairing with iPad, iPod Touch or iPhone,
+connection must be initiated and authenticated via L<bluetooth-applet(1)> 
+before starting btkbdd. Otherwise the device will initiate a PIN-based 
+authentication that is not supported. Once trust is estabilished,
+connections will work without a need for any other hassle.
+
+=head1 AUTHORS
+
+=over
+
+=item * Lubomir Rintel <L<lkundrak@v3.sk>>
+
+=item * Collin R. Mulliner <L<collin@betaversion.net>>
+
+L<http://www.mulliner.org/bluetooth/>
+
+Parts of code were taken from were taken from I<xkbd-bthid> project.
+
+=back
+
+btkbdd can be redistributed under the same terms and conditions as 
+I<xkbd-bthid> itself: GNU General Public License (any version at your
+option).
+
+The source code repository can be obtained from
+L<https://github.com/lkundrak/virtkbd>. Bug fixes and feature
+ehancements licensed under same conditions as btkbdd  are welcome
+via GIT pull requests.
+
+=head1 SEE ALSO
+
+L<udev(7)>, L<bluetoothd(8)>, L<hcitool(1)>, 
+I<USB Device Class Definition for Human Interface Devices (HID)>,
+I<Bluetooth HID Profile>.

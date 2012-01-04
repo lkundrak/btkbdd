@@ -2,3 +2,7 @@ btkbdd
 .*
 *.bak
 *.o
+*.8
+*.html
+*.ps
+*.tmp
