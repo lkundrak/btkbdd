@@ -19,15 +19,15 @@ set_class (dev, class)
 	dev = hci_open_dev(dev);
 	if (dev == -1) {
 		perror ("Can not open the bluetooth device");
-		return -1;
+		return 0;
 	}
 	if (hci_read_class_of_dev(dev, save_class, 1000) == -1) {
 		perror ("Can not read HCI class");
-		return -1;
+		return 0;
 	}
 	if (hci_write_class_of_dev(dev, class, 1000) == -1 ) {
 		perror ("Can not set HCI class");
-		return -1;
+		return 0;
 	}
 
 	return save_class[0] | save_class[1] << 8 | save_class[2] << 16;
