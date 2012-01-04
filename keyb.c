@@ -50,23 +50,28 @@ set_leds (input, leds)
 
 	event.code = LED_NUML;
 	event.value = !!(leds & HIDP_NUML);
-	write (input, &event, sizeof(event));
+	if (write (input, &event, sizeof(event)) != sizeof(event))
+		return -1;
 
 	event.code = LED_CAPSL;
 	event.value = !!(leds & HIDP_CAPSL);
-	write (input, &event, sizeof(event));
+	if (write (input, &event, sizeof(event)) != sizeof(event))
+		return -1;
 
 	event.code = LED_SCROLLL;
 	event.value = !!(leds & HIDP_SCROLLL);
-	write (input, &event, sizeof(event));
+	if (write (input, &event, sizeof(event)) != sizeof(event))
+		return -1;
 
 	event.code = LED_COMPOSE;
 	event.value = !!(leds & HIDP_COMPOSE);
-	write (input, &event, sizeof(event));
+	if (write (input, &event, sizeof(event)) != sizeof(event))
+		return -1;
 
 	event.code = LED_KANA;
 	event.value = !!(leds & HIDP_KANA);
-	write (input, &event, sizeof(event));
+	if (write (input, &event, sizeof(event)) != sizeof(event))
+		return -1;
 
 	return 0;
 }
@@ -97,7 +102,10 @@ btooth_command (status, fd, input)
 		/* Acknowledge anything -- both protocols have
 		 * the same descriptors for us */
 		handshake |= HIDP_HSHK_SUCCESSFUL;
-		write (fd, &handshake, 1);
+		if (write (fd, &handshake, 1) != 1) {
+			perror ("Could not reply with handshake.");
+			return -1;
+		}
 		break;
 	case HIDP_TRANS_DATA:
 		/* Apple (iPad) seemingly randomly sends either
@@ -108,7 +116,10 @@ btooth_command (status, fd, input)
 		}
 	default:
 		handshake |= HIDP_HSHK_ERR_UNKNOWN;
-		write (fd, &handshake, 1);
+		if (write (fd, &handshake, 1) != 1) {
+			perror ("Could not reply with handshake.");
+			return -1;
+		}
 
 #ifdef DEBUG
 		int i;
@@ -143,6 +154,7 @@ input_event (status, input, ctrl, intr)
 		fprintf (stderr, "Badly sized read from event device.\n");
 		return -1;
 	}
+
 	if (event.type != EV_KEY)
 		return 0;
 
@@ -260,16 +272,24 @@ input_open (dev)
 }
 
 /* Handshake with Apple crap */
-static void
+static int
 hello (control)
 {
 	/* Apple disconnects immediately,
 	 * if we don't send this within a second. */
-	write (control, "\xa1\x13\x03", 3);
-	write (control, "\xa1\x13\x02", 3);
+	if (write (control, "\xa1\x13\x03", 3) != 3) {
+		perror ("Could not send a handshake.");
+		return -1;
+	}
+	if (write (control, "\xa1\x13\x02", 3) != 3) {
+		perror ("Could not send a handshake.");
+		return -1;
+	}
 	/* Apple is known to require a small delay,
 	 * otherwise it eats the first character. */
 	sleep (1);
+
+	return 0;
 }
 
 /* Dispatch the work */
@@ -293,7 +313,6 @@ session (src, tgt, input, sintr, scontrol)
 		= status.report.key[5] = 0;
 	status.leds = 0;
 	set_leds (input, status.leds);
-
 
 	/* Watch out */
 	pf[0].fd = input;
@@ -339,7 +358,8 @@ session (src, tgt, input, sintr, scontrol)
 				pf[2].fd = intr = l2cap_connect (&src, tgt, L2CAP_PSM_HIDP_INTR);
 				if (intr == -1)
 					break;
-				hello (control);
+				if (hello (control) == -1)
+					break;
 			}
 
 			/* Send the packet to the host. */

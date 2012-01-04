@@ -16,7 +16,7 @@ main (argc, argv)
 	char *argv[];
 {
 	char *cable = NULL;
-        bdaddr_t src, tgt;
+	bdaddr_t src, tgt;
 	int opt;
 	FILE *cablef;
 	char addr[] = "00:00:00:00:00:00";
@@ -48,7 +48,8 @@ main (argc, argv)
 				perror (cable);
 				break;
 			}
-			fscanf (cablef, "%17s", addr);
+			if (fscanf (cablef, "%17s", addr) != 1)
+				fprintf (stderr, "Cable addres could not be read, ignoring.\n");
 			fclose (cablef);
 			if (bachk (addr) == -1) {
 				fprintf (stderr, "%s: Not a valid bluetooth address\n", addr);

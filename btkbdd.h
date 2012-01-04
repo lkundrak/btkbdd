@@ -11,8 +11,8 @@
 #include <stdint.h>
 #include <bluetooth/bluetooth.h>
 
-#ifndef __VKBD_H
-#define __VKBD_H
+#ifndef __BTKBDD_H
+#define __BTKBDD_H
 
 //#define DEBUG
 #ifdef DEBUG
