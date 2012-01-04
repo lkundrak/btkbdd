@@ -439,18 +439,23 @@ loop (device, src, tgt)
 
 				ba2str (&src, addr);
 				hci = hci_devid (addr);
+				/* Not yet plugged in or visited by udev? */
+				if (hci == -1)
+					perror ("Can not initialize HCI device");
 			} else {
 				/* No source device specified. Assume first. */
 				hci = 0;
 			}
 			if (hci >= 0) {
-				if (sdp_open () == 1)
-					sdp_add_keyboard ();
 				if (!save_class)
 					save_class = set_class (hci, 0x002540UL);
-			} else {
-				/* Not yet plugged in or visited by udev? */
-				perror ("Can not find HCI device");
+				/* Retry opening HCI on next ocassion */
+				if (!save_class)
+					hci = -1;
+			}
+			if (hci >= 0) {
+				if (sdp_open () == 1)
+					sdp_add_keyboard ();
 			}
 		}
 	} while (session (src, tgt, input, sintr, scontrol));
