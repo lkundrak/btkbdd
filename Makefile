@@ -41,6 +41,6 @@ install: $(BINS)
 	install -p $(BINS) $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)/etc/udev/rules.d
 	install -p -m644 90-btkbdd.rules $(DESTDIR)/etc/udev/rules.d
-	mkdir -p $(DESTDIR)/var/lib/btkbd
+	mkdir -p $(DESTDIR)/var/lib/btkbdd
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
 	install -p -m644 $(MAN) $(DESTDIR)$(PREFIX)/share/man/man8
