@@ -77,8 +77,8 @@ Linux input subsystem event device to use as source for key presses.
 
 =head1 EXAMPLES
 
-Use with L<udev(7)> is recommended. Look into F<90-btkbdd.rules> file 
-distributed with btkbdd for examples.
+Use with L<udev(7)> and L<systemd(1)> is recommended. Look into
+F<90-btkbdd.rules> and F<btkbdd@.service> files distributed with btkbdd for examples.
 
 =over
 
@@ -144,6 +144,7 @@ via GIT pull requests.
 
 =head1 SEE ALSO
 
-L<udev(7)>, L<bluetoothd(8)>, L<hcitool(1)>, 
+L<udev(7)>, L<systemd(1)>, L<systemd.service(5)>, L<systemd.unit(5)>,
+L<bluetoothd(8)>, L<hcitool(1)>, 
 I<USB Device Class Definition for Human Interface Devices (HID)>,
 I<Bluetooth HID Profile>.

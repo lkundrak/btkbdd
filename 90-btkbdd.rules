@@ -3,11 +3,11 @@
 # (likely just vendor-id and product-id, see examples below)
 
 ## 05ac:0221 Apple, Inc. Aluminum Keyboard (ISO)
-#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_USB_INTERFACE_NUM}=="00", ATTRS{idVendor}=="05ac", ATTRS{idProduct}=="0221", RUN+="/usr/sbin/btkbdd $env{DEVNAME} -c /var/lib/btkbd/apple.cable -d"
+#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_USB_INTERFACE_NUM}=="00", ATTRS{idVendor}=="05ac", ATTRS{idProduct}=="0221", TAG+="systemd" ENV{SYSTEMD_WANTS}="btkbdd@%k.service"
 
 ## 04f2:0111 Chicony Electronics Co., Ltd KU-9908 Keyboard
-#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_USB_INTERFACE_NUM}=="00", ATTRS{idVendor}=="04f2", ATTRS{idProduct}=="0111", RUN+="/usr/sbin/btkbdd $env{DEVNAME} -c /var/lib/btkbd/chicony.cable -d"
+#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_USB_INTERFACE_NUM}=="00", ATTRS{idVendor}=="04f2", ATTRS{idProduct}=="0111", TAG+="systemd" ENV{SYSTEMD_WANTS}="btkbdd@%k.service"
 
 ## A keyboard connected via given hub can be used too
 ## 05e3:0608 Genesys Logic, Inc. USB-2.0 4-Port HUB
-#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_USB_INTERFACE_NUM}=="00", ATTRS{idVendor}=="05e3", ATTRS{idProduct}=="0608", RUN+="/usr/sbin/btkbdd $env{DEVNAME} -c /var/lib/btkbd/%k.cable -d"
+#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_USB_INTERFACE_NUM}=="00", ATTRS{idVendor}=="05e3", ATTRS{idProduct}=="0608", TAG+="systemd" ENV{SYSTEMD_WANTS}="btkbdd@%k.service"

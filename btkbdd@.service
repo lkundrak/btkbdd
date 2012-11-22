@@ -1,0 +1,6 @@
+[Unit]
+Requires=bluetooth.service
+Documentation=man:btkbdd(1)
+
+[Service]
+ExecStart=-/usr/sbin/btkbdd /dev/input/%I -c /var/lib/btkbdd/%I.cable

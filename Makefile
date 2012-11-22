@@ -2,7 +2,7 @@
 # Lubomir Rintel <lkundrak@v3.sk>
 # License: GPL
 
-VERSION = 1.0
+VERSION = 1.3
 
 CFLAGS += -Wall -g3
 override LDFLAGS += $(shell pkg-config bluez --libs)
@@ -41,6 +41,8 @@ install: $(BINS)
 	install -p $(BINS) $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)/etc/udev/rules.d
 	install -p -m644 90-btkbdd.rules $(DESTDIR)/etc/udev/rules.d
-	mkdir -p $(DESTDIR)/var/lib/btkbd
+	mkdir -p $(DESTDIR)$(PREFIX)/lib/systemd/system
+	install -p -m644 btkbdd@.service $(DESTDIR)$(PREFIX)/lib/systemd/system
+	mkdir -p $(DESTDIR)/var/lib/btkbdd
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
 	install -p -m644 $(MAN) $(DESTDIR)$(PREFIX)/share/man/man8
