@@ -62,7 +62,7 @@ static sdp_data_t *access_proto_to_dataseq(sdp_record_t *rec, sdp_list_t *proto)
 		sdp_list_t *elt = (sdp_list_t *)p->data;
 		sdp_data_t *s;
 		int pslen = 0;
-		for (; elt && pslen < sizeof(dtds); elt = elt->next, pslen++) {
+		for (; elt && pslen < 10; elt = elt->next, pslen++) {
 			sdp_data_t *d = (sdp_data_t *)elt->data;
 			dtds[pslen] = &d->dtd;
 			switch (d->dtd) {
