@@ -8,7 +8,7 @@
 
 #include <linux/input.h>
 
-unsigned char linux2hid[] = {
+unsigned char linux2hid[0x100] = {
 	[KEY_RESERVED] = 0,
 	[KEY_ESC] = 41,
 	[KEY_1] = 30,
