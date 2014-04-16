@@ -238,37 +238,40 @@ input_open (dev)
 	/* Check if we're running against the same API that we're compiled with */
 	if (ioctl (input, EVIOCGVERSION, &version) == -1) {
 		perror ("Could not read input protocol version");
-		return -1;
+		goto fail;
 	}
 	if (version >> 16 != EV_VERSION >> 16) {
 		fprintf (stderr, "Bad input subsystem version");
-		return -1;
+		goto fail;
 	}
 
 	/* Ensure we're talking to a keyboard. TODO: Check for LED support. */
 	if (ioctl (input, EVIOCGBIT(0, EV_MAX), &features) == -1) {
 		perror ("Could query device for supported features");
-		return -1;
+		goto fail;
 	}
 	if (!(features & EV_KEY)) {
 		/* Not a keyboard? */
 		fprintf (stderr, "Device not capable of producing key press event.");
-		return -1;
+		goto fail;
 	}
 
 	/* Grab the keyboard, so that the events are not seen by X11 */
 	if (ioctl (input, EVIOCGRAB, 1) == -1) {
 		perror ("Could not grab keyboard for exclusive use");
-		return -1;
+		goto fail;
 	}
 
 	/* Host takes care of autorepeat itself */
 	if (ioctl (input, EVIOCSREP, norepeat) == -1) {
 		perror ("Could not disable autorepeat");
-		return -1;
+		goto fail;
 	}
 
 	return input;
+fail:
+	close (input);
+	return -1;
 }
 
 /* Handshake with Apple crap */
