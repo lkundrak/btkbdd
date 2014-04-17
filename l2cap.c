@@ -31,26 +31,33 @@ int l2cap_listen(const bdaddr_t *bdaddr, unsigned short psm, int lm, int backlog
 
 	if (bind(sk, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 		perror ("Cannot bind a L2CAP server socket");
-		close(sk);
-		return -1;
+		goto fail;
 	}
 
-	setsockopt(sk, SOL_L2CAP, L2CAP_LM, &lm, sizeof(lm));
+	if (setsockopt(sk, SOL_L2CAP, L2CAP_LM, &lm, sizeof(lm)) < 0) {
+		perror ("Cannot set socket options");
+		goto fail;
+	}
 
 	memset(&opts, 0, sizeof(opts));
 	opts.imtu = HIDP_DEFAULT_MTU;
 	opts.omtu = HIDP_DEFAULT_MTU;
 	opts.flush_to = 0xffff;
 
-	setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts));
+	if (setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts)) < 0) {
+		perror ("Cannot set L2CAP socket options");
+		goto fail;
+	}
 
 	if (listen(sk, backlog) < 0) {
 		perror ("Cannot listen to a L2CAP server socket");
-		close(sk);
-		return -1;
+		goto fail;
 	}
 
 	return sk;
+fail:
+	close(sk);
+	return -1;
 }
 
 int l2cap_connect(bdaddr_t *src, bdaddr_t *dst, unsigned short psm)
@@ -79,7 +86,10 @@ int l2cap_connect(bdaddr_t *src, bdaddr_t *dst, unsigned short psm)
 	opts.omtu = HIDP_DEFAULT_MTU;
 	opts.flush_to = 0xffff;
 
-	setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts));
+	if (setsockopt(sk, SOL_L2CAP, L2CAP_OPTIONS, &opts, sizeof(opts)) < 0) {
+		perror ("Cannot set L2CAP socket options");
+		goto fail;
+	}
 
 	memset(&addr, 0, sizeof(addr));
 	addr.l2_family  = AF_BLUETOOTH;
@@ -88,11 +98,13 @@ int l2cap_connect(bdaddr_t *src, bdaddr_t *dst, unsigned short psm)
 
 	if (connect(sk, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
 		perror ("Cannot connect to a L2CAP client socket");
-		close(sk);
-		return -1;
+		goto fail;
 	}
 
 	return sk;
+fail:
+	close(sk);
+	return -1;
 }
 
 int l2cap_accept(int sk, bdaddr_t *bdaddr)
