@@ -359,8 +359,11 @@ session (src, tgt, input, sintr, scontrol)
 				if (control == -1)
 					break;
 				pf[2].fd = intr = l2cap_connect (&src, tgt, L2CAP_PSM_HIDP_INTR);
-				if (intr == -1)
+				if (intr == -1) {
+					close (control);
+					control = -1;
 					break;
+				}
 				if (hello (control) == -1)
 					break;
 			}
