@@ -2,7 +2,7 @@
 # Lubomir Rintel <lkundrak@v3.sk>
 # License: GPL
 
-VERSION = 1.3
+VERSION = 1.4
 
 CFLAGS += -Wall -g3
 override LDFLAGS += $(shell pkg-config bluez --libs)
