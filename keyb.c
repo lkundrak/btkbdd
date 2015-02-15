@@ -164,14 +164,16 @@ input_event (status, input, ctrl, intr)
 		return 0;
 	}
 
-	/* Apply modifiers. TODO: wtf is "Left/RightGUI"? */
+	/* Apply modifiers. "Left/RightGUI is Windows / Command / Meta" */
 	switch (event.code) {
 	case KEY_LEFTCTRL: mod = HIDP_LEFTCTRL; break;
 	case KEY_LEFTSHIFT: mod = HIDP_LEFTSHIFT; break;
 	case KEY_LEFTALT: mod = HIDP_LEFTALT; break;
+	case KEY_LEFTMETA: mod = HIDP_LEFTGUI; break;
 	case KEY_RIGHTCTRL: mod = HIDP_RIGHTCTRL; break;
 	case KEY_RIGHTSHIFT: mod = HIDP_RIGHTSHIFT; break;
 	case KEY_RIGHTALT: mod = HIDP_RIGHTALT; break;
+	case KEY_RIGHTMETA: mod = HIDP_RIGHTGUI; break;
 	}
 
 	if (mod) {
