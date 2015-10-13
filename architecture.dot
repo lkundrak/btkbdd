@@ -1,0 +1,27 @@
+digraph {
+	subgraph cluster_0 {
+		label = "evmuxd@event3.service";
+		evdev -> evmuxd;
+		evdev [label = "/dev/input/event3", shape="box"];
+	};
+
+	evmuxd -> evmux1 [label = "Scroll Lock"];
+	evmuxd -> evmux2 [label = "Scroll Lock"];
+
+	subgraph cluster_1 {
+		label = "btkbdd@event9.service";
+		evmux2 -> btkbdd;
+		evmux2 [label = "/dev/input/event9", shape="box"];
+	}
+
+	physical -> evdev;
+	evmux1 -> local;
+	btkbdd -> remote;
+
+	physical [label = "Physical Keyboard", shape="box"];
+	local [label = "Local Keyboard", shape="box"];
+	remote [label = "Bluetooth Keyboard", shape="box"]
+	btkbdd [label = "btkbdd(8)"];
+	evmuxd [label = "evmuxd(8)"];
+	evmux1 [label = "/dev/input/event7", shape="box"];
+}

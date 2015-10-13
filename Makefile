@@ -14,7 +14,10 @@ BINS = btkbdd/btkbdd evmuxd/evmuxd
 MAN = btkbdd/btkbdd.8 evmuxd/evmuxd.8
 UDEV_RULES = btkbdd/90-btkbdd.rules evmuxd/90-evmuxd.rules
 SERVICES = btkbdd/btkbdd@.service evmuxd/evmuxd@.service
+DOC = architecture.png
+
 all: $(BINS) $(MAN)
+local: $(DOC)
 
 btkbdd/btkbdd: btkbdd/main.o btkbdd/keyb.o btkbdd/sdp.o btkbdd/l2cap.o btkbdd/hci.o
 btkbbdd/keyb.o: btkbdd/btkbdd.h btkbdd/hid.h btkbdd/linux2hid.h
@@ -35,6 +38,9 @@ $(BINS):
 
 %.ps: %.8
 	groff -mman $< >$@
+
+%.png: %.dot
+	dot -Tpng -o $@ $<
 
 clean:
 	rm -f */*.o $(BINS) $(MAN)

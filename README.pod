@@ -1,0 +1,18 @@
+=head1 btkbdd and evmuxd
+
+This is a package that provides two nifty tools for sharing your keyboard via
+Bluetooth and optionally multiplexing in a way that permits the keyboard to be
+switched between local and remote use.
+
+Please refer to L<evmuxd(8)> and L<btkbdd(8)> manuals for details about the
+operation of the tools.
+
+=begin html
+
+<center>
+<img type="image/png" src="architecture.png" alt="">
+</center>
+
+=end html
+
+=cut
