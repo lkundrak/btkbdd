@@ -42,8 +42,8 @@ clean:
 install: $(BINS)
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	install -p $(BINS) $(DESTDIR)$(PREFIX)/sbin
-	mkdir -p $(DESTDIR)/etc/udev/rules.d
-	install -p -m644 $(UDEV_RULES) $(DESTDIR)/etc/udev/rules.d
+	mkdir -p $(DESTDIR)$(PREFIX)/lib/udev/rules.d
+	install -p -m644 $(UDEV_RULES) $(DESTDIR)$(PREFIX)/lib/udev/rules.d
 	mkdir -p $(DESTDIR)$(PREFIX)/lib/systemd/system
 	install -p -m644 $(SERVICES) $(DESTDIR)$(PREFIX)/lib/systemd/system
 	mkdir -p $(DESTDIR)/var/lib/btkbdd
