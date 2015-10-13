@@ -1,0 +1,69 @@
+=head1 NAME
+
+evmuxd - Event Device Multiplexing Daemon
+
+=head1 SYNOPSIS
+
+B<evmuxd> I<device>
+
+=head1 DESCRIPTION
+
+This tool creates two Linux virtual keyboards and forwards the events from a
+given physical keyboard to either of the two. It's possible to switch the
+target of the redirect with a special key press.
+
+This is useful when the user wants to assign a special purpose to one of the
+keyboard while grabbing it (such as exporting the keyboard via L<btkbdd(8)>)
+while still retaining the local keyboard functionality on his system.
+
+The virtual keyboard have a sysfs attribute C<name> set to C<evmuxd primary>
+and C<evmuxd secondary> with the primary one being chosen by default.
+
+The special key used is C<SCROLL LOCK>.
+
+=head1 OPTIONS
+
+=over
+
+=item I<device>
+
+Linux input subsystem event device to use as event source.
+
+=back
+
+=head1 EXAMPLES
+
+Use with L<udev(7)> and L<systemd(1)> is recommended. Look into
+F<89-evmuxd.rules> and F<evmuxd@.service> files distributed with evmuxd for
+examples.
+
+=head1 BUGS
+
+It's possible to create only two devices.
+
+It's not possible to configure the magic key.
+
+It's not possible to control the virtual keyboard metadata, such as name,
+product and vendor IDs or version.
+
+Only keyboard input devices are supported.
+
+=head1 AUTHORS
+
+=over
+
+=item * Lubomir Rintel <L<lkundrak@v3.sk>>
+
+=back
+
+evmuxd can be redistributed under the terms of GNU General Public License
+(any version at your option).
+
+The source code repository can be obtained from
+L<https://github.com/lkundrak/btkbdd>. Bug fixes and feature
+ehancements licensed under same conditions as evmuxd  are welcome
+via GIT pull requests.
+
+=head1 SEE ALSO
+
+L<btkbdd(7)>, L<systemd(1)>, L<systemd.service(5)>, L<systemd.unit(5)>.

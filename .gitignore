@@ -1,4 +1,5 @@
 btkbdd/btkbdd
+evmuxd/evmuxd
 .*
 *.bak
 *.o
