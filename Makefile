@@ -10,16 +10,18 @@ override LDFLAGS += -Wl,--as-needed
 
 PREFIX = /usr/local
 
-BINS = btkbdd
-MAN = btkbdd.8
+BINS = btkbdd/btkbdd
+MAN = btkbdd/btkbdd.8
+UDEV_RULES = btkbdd/90-btkbdd.rules
+SERVICES = btkbdd/btkbdd@.service
 all: $(BINS) $(MAN)
 
-btkbdd: main.o keyb.o sdp.o l2cap.o hci.o
+btkbdd/btkbdd: btkbdd/main.o btkbdd/keyb.o btkbdd/sdp.o btkbdd/l2cap.o btkbdd/hci.o
 
-keyb.o: btkbdd.h hid.h linux2hid.h
-l2cap.o: btkbdd.h
-main.o: btkbdd.h
-sdp.o: btkbdd.h apple.h
+btkbbdd/keyb.o: btkbdd/btkbdd.h btkbdd/hid.h btkbdd/linux2hid.h
+btkbbdd/l2cap.o: btkbdd/btkbdd.h
+btkbbdd/main.o: btkbdd/btkbdd.h
+btkbbdd/sdp.o: btkbdd/btkbdd.h btkbdd/apple.h
 
 $(BINS):
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
@@ -34,15 +36,15 @@ $(BINS):
 	groff -mman $< >$@
 
 clean:
-	rm -f *.o $(BINS) $(MAN)
+	rm -f */*.o $(BINS) $(MAN)
 
 install: $(BINS)
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	install -p $(BINS) $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)/etc/udev/rules.d
-	install -p -m644 90-btkbdd.rules $(DESTDIR)/etc/udev/rules.d
+	install -p -m644 $(UDEV_RULES) $(DESTDIR)/etc/udev/rules.d
 	mkdir -p $(DESTDIR)$(PREFIX)/lib/systemd/system
-	install -p -m644 btkbdd@.service $(DESTDIR)$(PREFIX)/lib/systemd/system
+	install -p -m644 $(SERVICES) $(DESTDIR)$(PREFIX)/lib/systemd/system
 	mkdir -p $(DESTDIR)/var/lib/btkbdd
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
 	install -p -m644 $(MAN) $(DESTDIR)$(PREFIX)/share/man/man8
