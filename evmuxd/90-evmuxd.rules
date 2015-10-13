@@ -1,0 +1,9 @@
+# Add your keyboards here, dear sir or lady.
+# Use udevadm info --export-db or lsusb to find out how to identify your keyboard
+# (likely just vendor-id and product-id, see examples below)
+
+# Multiplex the internal PC keyboard
+#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_INPUT_KEYBOARD}=="1", ENV{ID_PATH}=="platform-i8042-serio-0", TAG+="systemd" ENV{SYSTEMD_WANTS}="evmuxd@%k.service"
+
+# Activate btkbdd(8) for the second multiplexed half
+#SUBSYSTEM=="input", ACTION=="add", ENV{MAJOR}=="13", ENV{ID_INPUT_KEYBOARD}=="1", ATTRS{name}=="evmuxd secondary", TAG+="systemd", ENV{SYSTEMD_WANTS}="btkbdd@evmuxd2.service", SYMLINK+="input/evmuxd2"

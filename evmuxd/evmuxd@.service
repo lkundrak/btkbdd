@@ -1,0 +1,5 @@
+[Unit]
+Documentation=man:evmuxd(1)
+
+[Service]
+ExecStart=-/usr/sbin/evmuxd /dev/input/%I

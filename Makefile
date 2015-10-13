@@ -10,18 +10,19 @@ override LDFLAGS += -Wl,--as-needed
 
 PREFIX = /usr/local
 
-BINS = btkbdd/btkbdd
-MAN = btkbdd/btkbdd.8
-UDEV_RULES = btkbdd/90-btkbdd.rules
-SERVICES = btkbdd/btkbdd@.service
+BINS = btkbdd/btkbdd evmuxd/evmuxd
+MAN = btkbdd/btkbdd.8 evmuxd/evmuxd.8
+UDEV_RULES = btkbdd/90-btkbdd.rules evmuxd/90-evmuxd.rules
+SERVICES = btkbdd/btkbdd@.service evmuxd/evmuxd@.service
 all: $(BINS) $(MAN)
 
 btkbdd/btkbdd: btkbdd/main.o btkbdd/keyb.o btkbdd/sdp.o btkbdd/l2cap.o btkbdd/hci.o
-
 btkbbdd/keyb.o: btkbdd/btkbdd.h btkbdd/hid.h btkbdd/linux2hid.h
 btkbbdd/l2cap.o: btkbdd/btkbdd.h
 btkbbdd/main.o: btkbdd/btkbdd.h
 btkbbdd/sdp.o: btkbdd/btkbdd.h btkbdd/apple.h
+
+evmuxd/evmuxd: evmuxd/main.o
 
 $(BINS):
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
