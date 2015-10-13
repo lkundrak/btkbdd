@@ -10,7 +10,7 @@
 #define UINPUT "/dev/uinput"
 
 static int
-open_uinput (char *name)
+open_uinput (const char *name)
 {
 	int fd;
 	struct uinput_user_dev dev = { 0, };
@@ -39,7 +39,7 @@ open_uinput (char *name)
 		goto fail;
 	}
 
-	snprintf (dev.name, UINPUT_MAX_NAME_SIZE, name);
+	strncpy (dev.name, name, UINPUT_MAX_NAME_SIZE);
 	dev.id.bustype = BUS_VIRTUAL;
 	dev.id.vendor  = 0x0666;
 	dev.id.product = 0x8086;
