@@ -279,6 +279,7 @@ fail:
 /* Handshake with Apple crap */
 static int
 hello (control)
+	int control;
 {
 	/* Apple disconnects immediately,
 	 * if we don't send this within a second. */
