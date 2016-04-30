@@ -45,7 +45,7 @@ computers with a single HCI.
 =item B<-t> I<addr>
 
 Attempt connecting to given address upon key press, if no connection has 
-been estabilished yet. This can be used to effectively "hardwire" the 
+been established yet. This can be used to effectively "hardwire" the 
 keyboard to a given host.
 
 Once an incoming connection is estabilished and terminated, btkbdd always
@@ -113,10 +113,10 @@ errors.
 
 Only a common 101-key keyboard is supported.
 
-To estabilish pairing with iPad, iPod Touch or iPhone,
+To establish pairing with iPad, iPod Touch or iPhone,
 connection must be initiated and authenticated via L<bluetooth-applet(1)> 
 before starting btkbdd. Otherwise the device will initiate a PIN-based 
-authentication that is not supported. Once trust is estabilished,
+authentication that is not supported. Once trust is established,
 connections will work without a need for any other hassle.
 
 =head1 AUTHORS
