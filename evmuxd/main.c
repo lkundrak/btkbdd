@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 #define UINPUT "/dev/uinput"
 
@@ -116,13 +119,30 @@ main (int argc, char *argv[])
 	struct input_event event;
 	int active = 0;
 	int switching = 0;
+	unsigned int switch_key = KEY_SCROLLLOCK;
+	int opt;
 
-	if (argc != 2) {
-		fprintf (stderr, "Usage: %s /dev/input/event<n>\n", argv[0]);
+	while ((opt = getopt(argc, argv, "k:")) != -1) {
+
+        switch (opt) {
+        case 'k':
+                switch_key = strtoumax(optarg, NULL, 10);
+                if ((switch_key == UINTMAX_MAX && errno == ERANGE) 
+                    || (switch_key <= 0)
+                    || (switch_key > UINT_LEAST16_MAX)) {
+                    fprintf(stderr, "Incorrect keycode %s given\n", optarg);
+                    return 1;
+                }
+                break;
+        }
+    }
+
+	if (optind + 1 != argc) {
+		fprintf (stderr, "Usage: %s [-k keycode] /dev/input/event<n>\n", argv[0]);
 		return 1;
 	}
 
-	input = open_input (argv[1]);
+	input = open_input (argv[optind]);
 	if (input == -1)
 		return 1;
 
@@ -158,7 +178,7 @@ main (int argc, char *argv[])
 		}
 
 		if (event.type == EV_KEY
-			&& event.code == KEY_SCROLLLOCK
+			&& event.code == switch_key
 			&& event.value == 0) {
 			switching = 1;
 		}
