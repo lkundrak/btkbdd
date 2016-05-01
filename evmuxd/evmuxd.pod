@@ -4,7 +4,9 @@ evmuxd - Event Device Multiplexing Daemon
 
 =head1 SYNOPSIS
 
-B<evmuxd> I<device>
+B<evmuxd>
+[-k keycode]
+I<device>
 
 =head1 DESCRIPTION
 
@@ -19,11 +21,18 @@ while still retaining the local keyboard functionality on his system.
 The virtual keyboard have a sysfs attribute C<name> set to C<evmuxd primary>
 and C<evmuxd secondary> with the primary one being chosen by default.
 
-The special key used is C<SCROLL LOCK>.
+The default special key used is C<SCROLL LOCK>, and can be changed with the
+-k option.
 
 =head1 OPTIONS
 
 =over
+
+=item B<-k> I<keycode>
+
+Use this keycode for the magic key used to switch. See
+F</usr/include/linux/input.h> for a list of values. Only numeric
+values are supported. Default is 70 for C<SCROLL LOCK>.
 
 =item I<device>
 
@@ -40,8 +49,6 @@ examples.
 =head1 BUGS
 
 It's possible to create only two devices.
-
-It's not possible to configure the magic key.
 
 It's not possible to control the virtual keyboard metadata, such as name,
 product and vendor IDs or version.
