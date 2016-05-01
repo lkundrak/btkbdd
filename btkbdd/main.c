@@ -49,7 +49,7 @@ main (argc, argv)
 				break;
 			}
 			if (fscanf (cablef, "%17s", addr) != 1)
-				fprintf (stderr, "Cable addres could not be read, ignoring.\n");
+				fprintf (stderr, "Cable address could not be read, ignoring.\n");
 			fclose (cablef);
 			if (bachk (addr) == -1) {
 				fprintf (stderr, "%s: Not a valid bluetooth address\n", addr);
