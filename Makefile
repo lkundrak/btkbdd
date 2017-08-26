@@ -12,7 +12,7 @@ PREFIX = /usr/local
 
 BINS = btkbdd/btkbdd evmuxd/evmuxd
 MAN = btkbdd/btkbdd.8 evmuxd/evmuxd.8
-UDEV_RULES = btkbdd/90-btkbdd.rules btkbdd/89-evmuxd.rules
+UDEV_RULES = btkbdd/90-btkbdd.rules evmuxd/89-evmuxd.rules
 SERVICES = btkbdd/btkbdd@.service evmuxd/evmuxd@.service
 DOC = architecture.png
 
